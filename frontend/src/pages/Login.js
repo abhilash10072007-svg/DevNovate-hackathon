@@ -38,12 +38,44 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input className="form-input" type="email" name="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+            <input
+              className="form-input"
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
           </div>
+
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input className="form-input" type="password" name="password" placeholder="Your password" value={form.password} onChange={handleChange} required />
+            <input
+              className="form-input"
+              type="password"
+              name="password"
+              placeholder="Your password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            {/* Forgot password link */}
+            <Link
+              to="/forgot-password"
+              style={{
+                display: 'block',
+                textAlign: 'right',
+                color: '#60a5fa',
+                fontSize: '0.8rem',
+                textDecoration: 'none',
+                marginTop: '0.4rem',
+              }}
+            >
+              Forgot password?
+            </Link>
           </div>
+
           <button className="btn btn-primary" type="submit" disabled={loading}>
             {loading ? '⏳ Signing in...' : '🔐 Sign In'}
           </button>

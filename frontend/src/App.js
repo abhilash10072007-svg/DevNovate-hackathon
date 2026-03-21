@@ -11,11 +11,13 @@ import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import Internships from './pages/Internships';
 import Layout from './components/Layout';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#0f172a' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0f172a' }}>
       <div className="spinner" />
     </div>
   );
@@ -35,6 +37,12 @@ function AppRoutes() {
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/verify-otp" element={<PublicRoute><VerifyOTP /></PublicRoute>} />
+
+      {/* ── Forgot / Reset Password ── */}
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* ── Private routes ── */}
       <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="skills" element={<Skills />} />
@@ -50,10 +58,13 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <Toaster position="top-right" toastOptions={{
-          style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155' },
-          success: { iconTheme: { primary: '#2563eb', secondary: '#fff' } }
-        }} />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155' },
+            success: { iconTheme: { primary: '#2563eb', secondary: '#fff' } }
+          }}
+        />
         <AppRoutes />
       </Router>
     </AuthProvider>

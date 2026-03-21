@@ -113,4 +113,65 @@ router.get('/me', protect, async (req, res) => {
   res.json(req.user);
 });
 
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body
+    const user = await User.findOne({ email })
+    if (!user) return res.json({ success: true, message: 'If this email exists, a reset link was sent.' })
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15m' })
+    const resetLink = `http://localhost:3001/reset-password?token=${token}`
+
+    await sendOTPEmail(email, resetLink, user.name || 'User')
+    res.json({ success: true, message: 'Password reset link sent to your email.' })
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' })
+  }
+})
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.id)
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid token' })
+
+    user.password = password
+    await user.save()
+    res.json({ success: true, message: 'Password reset successful. Please login.' })
+  } catch (err) {
+    res.status(400).json({ success: false, message: 'Token expired or invalid' })
+  }
+})
+
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body
+    const user = await User.findOne({ email })
+    if (!user) return res.json({ success: true, message: 'If this email exists, a reset link was sent.' })
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15m' })
+    const resetLink = `http://localhost:3001/reset-password?token=${token}`
+    await sendOTPEmail(email, resetLink, user.name || 'User')
+    res.json({ success: true, message: 'Password reset link sent to your email.' })
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error', error: err.message })
+  }
+})
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.id)
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid token' })
+    user.password = password
+    await user.save()
+    res.json({ success: true, message: 'Password reset successful! Redirecting to login...' })
+  } catch (err) {
+    res.status(400).json({ success: false, message: 'Token expired or invalid.' })
+  }
+})
+
 module.exports = router;
